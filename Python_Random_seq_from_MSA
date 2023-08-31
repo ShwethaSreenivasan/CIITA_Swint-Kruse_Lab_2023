@@ -1,0 +1,63 @@
+Python scripts to randomly extract sequences from a multiple sequence alignment. 
+#Script 1: Extract all sequence IDs from MSA
+#python 3.10.6
+#Shwetha Sreenivasan, Swint-Kruse Lab, 4Sep2021
+import sys
+fh=open (sys.argv[1])
+fw=open(sys.argv[2],'a')
+for line in fh:    
+    if line[0]=='>':
+        fw.write(line)
+        continue
+fw.close()
+fh.close()
+
+
+#Script 2: Randomly extract sequence IDs from a list of IDs
+#python 3.10.6
+#Shwetha Sreenivasan, Swint-Kruse Lab, 6Dec22
+import random
+import sys, random
+fh=open (sys.argv[1])
+sample=(sys.argv[2])
+SeqID_list = []
+for line in fh:
+    if line[0]=='>':
+        SeqID_list.append(line)
+        continue
+fh.close()
+SeqID_sample = random.sample(SeqID_list, int(sample))
+with open(sys.argv[3], 'w') as fw:
+    for seq in SeqID_sample:
+        fw.write(seq)
+
+
+#Script 3: Extract an MSA from a list of sequence IDs
+#python 3.10.6
+#Shwetha Sreenivasan, Swint-Kruse Lab, 27Jan2022
+import sys, os
+List_of_SeqIDs = sys.argv[1] #text file with the list of sequence IDs to be extracted
+All_seq_MSA = sys.argv[2] #MSA to extract sequences from
+output_lines = open(sys.argv[3],'w')
+list_seqIDs = [] 
+with open(List_of_SeqIDs, 'r') as seqIDs:
+    for line in seqIDs:
+        list_seqIDs.append(line.split('>') )
+with open(All_seq_MSA,'r') as MSA: 
+    flag = 0
+    MSA_dic = {}
+    seq = [] 
+    temp = 'abc'
+    for line in MSA:        
+        if line[0] == '>': 
+            MSA_dic[temp] = ''.join(seq)
+            seq = [] 
+            temp = line.split('.')[0].strip('>')         
+        else:
+            seq.append(line)              
+MSA_dic[temp] = ''.join(seq)
+for i in list_seqIDs:
+    if i in MSA_dic:
+        output_lines.write('>'+i+'\n')
+        output_lines.write(MSA_dic[i])    
+output_lines.close()
